@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: dev
+
+#  mybatis plus 配置
+mybatis-plus:
+  type-aliases-package: com.clw.domain.*
+  mapper-locations: mapper/*.xml
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增
