@@ -21,4 +21,7 @@ public interface MyConstant {
 
     // jwt 秘钥
     String JWT_SECRET = "secret";
+
+    // Token的key
+    String TOKEN_KEY = "Authorization";
 }

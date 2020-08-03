@@ -3,6 +3,9 @@ package com.clw.common.user;
 import com.clw.sys.domain.Menu;
 import com.clw.sys.domain.Role;
 import com.clw.sys.domain.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Set;
@@ -12,6 +15,9 @@ import java.util.Set;
  * @Description:
  * @Date: 2020/8/1 21:13
  */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginUser {
 
     /**

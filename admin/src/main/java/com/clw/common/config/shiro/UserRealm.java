@@ -1,11 +1,13 @@
 package com.clw.common.config.shiro;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.clw.common.user.LoginUser;
 import com.clw.common.utils.JWTUtils;
 import com.clw.sys.domain.Menu;
 import com.clw.sys.domain.Role;
 import com.clw.sys.domain.User;
 import com.clw.sys.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -15,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,8 +46,31 @@ public class UserRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 
-        return null;
+        // 如果为超级管理员，则赋予所有权限
+        if (loginUser.getUser().getType() == 0) {
+            authorizationInfo.addStringPermission("*:*");
+        } else {
+            // 从指定集合复制元素，且与所复制元素相同的初始容量
+            List<String> permissionList = new ArrayList<>(loginUser.getPermissions());
+            List<Role> roleList = loginUser.getRoles();
+            // 授权角色
+            if (!CollectionUtils.isEmpty(roleList)) {
+                for (Role role : roleList) {
+                    authorizationInfo.addRole(role.getRoleName());
+                }
+            }
+            // 授权权限
+            if (!CollectionUtils.isEmpty(permissionList)) {
+                for (String permission : permissionList) {
+                    if (permission != null && !"".equals(permission)) {
+                        authorizationInfo.addStringPermission(permission);
+                    }
+                }
+            }
+        }
+        return authorizationInfo;
     }
 
     /**
@@ -90,6 +116,13 @@ public class UserRealm extends AuthorizingRealm {
                 }
             }
         }
-        return new SimpleAuthenticationInfo(username, token, getName());
+        // 过滤出url和用户的权限
+        LoginUser loginUser = new LoginUser();
+        loginUser.setRoles(roleSet);
+        loginUser.setUser(user);
+        loginUser.setMenus(menuList);
+        loginUser.setUrls(urls);
+        loginUser.setPermissions(perms);
+        return new SimpleAuthenticationInfo(loginUser, token, getName());
     }
 }
