@@ -12,7 +12,7 @@
         <mybatisplus.version>3.3.2</mybatisplus.version>
         <druid.version>1.1.17</druid.version>
         <swaggwer.version>2.6.1</swaggwer.version>
-        <shiro.version>1.4.0</shiro.version>
+        <shiro.version>1.7.0</shiro.version>
         <jwt.version>0.9.1</jwt.version>
     </properties>
 
